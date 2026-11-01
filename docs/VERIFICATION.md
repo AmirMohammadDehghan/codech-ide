@@ -17,4 +17,4 @@ No paid API turn or ChatGPT entitlement/inference was exercised. Real Luna/Terra
 
 The optional Graphiti service was not installed; its adapter has mocked transport tests. Obsidian plugin execution and PyCharm parity are not implemented. Only Windows x64 was packaged. We did not compile the Code-OSS engine from source, sign binaries, test automatic updating or claim bit-for-bit installer reproducibility.
 
-GitHub CI is configured for Windows and Linux; local results alone do not establish remote CI status. The desktop workflow is manual and is not claimed to have run remotely.
+GitHub CI passed on Windows and Linux after a test comparison was corrected to canonicalize Windows worktree paths. Run: https://github.com/AmirMohammadDehghan/codech-ide/actions/runs/41305575512 . The desktop workflow remains manual and is not claimed to have run remotely.
