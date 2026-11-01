@@ -28,3 +28,5 @@ The optional Graphiti service was not installed; its adapter has mocked transpor
 GitHub CI passed on Windows and Linux after a test comparison was corrected to canonicalize Windows worktree paths. Run: https://github.com/AmirMohammadDehghan/codech-ide/actions/runs/41305575512 . The desktop workflow remains manual and is not claimed to have run remotely.
 
 0.3 composer/inspector browser tests additionally checked Persian draft and caret preservation during context updates, a 540px panel without horizontal overflow, voice text appended without automatic send, and removal of secret attributes/script text from selected-element context. Screenshots are labeled fixtures.
+
+A real bundled Codex app-server also completed a full streamed turn against a local deterministic Responses fixture, then resumed the persisted thread successfully. This verifies transport and turn lifecycle without invoking an external model. Reproduce after building with `node scripts/test-codex-runtime.cjs [path-to-codex]`. It does not establish ChatGPT account entitlement or model quality.
