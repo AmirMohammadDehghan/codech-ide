@@ -1,0 +1,22 @@
+{
+  "nameShort": "Codech IDE",
+  "nameLong": "Codech IDE",
+  "applicationName": "codech-ide",
+  "dataFolderName": ".codech-ide",
+  "win32MutexName": "codechide",
+  "win32DirName": "Codech IDE",
+  "win32NameVersion": "Codech IDE",
+  "win32RegValueName": "CodechIDE",
+  "win32AppUserModelId": "Codech.IDE",
+  "darwinBundleIdentifier": "ir.codech.ide",
+  "linuxIconName": "codech-ide",
+  "urlProtocol": "codech-ide",
+  "reportIssueUrl": "https://github.com/AmirMohammadDehghan/codech-ide/issues",
+  "licenseName": "MIT",
+  "licenseUrl": "https://github.com/AmirMohammadDehghan/codech-ide/blob/main/LICENSE",
+  "enableTelemetry": false,
+  "extensionsGallery": {
+    "serviceUrl": "https://open-vsx.org/vscode/gallery",
+    "itemUrl": "https://open-vsx.org/vscode/item"
+  }
+}

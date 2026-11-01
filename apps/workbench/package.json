@@ -1,0 +1,160 @@
+{
+  "name": "codech-workbench",
+  "displayName": "Codech IDE — Workbench",
+  "version": "0.1.0",
+  "publisher": "codech",
+  "description": "Agent-first workbench with central chat, local Markdown knowledge, worktrees and human code review.",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.cjs",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Agent execution and workspace operations require Workspace Trust."
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "codech.open",
+        "title": "Codech: Open Workbench"
+      },
+      {
+        "command": "codech.knowledge",
+        "title": "Codech: Open Knowledge"
+      },
+      {
+        "command": "codech.review",
+        "title": "Codech: Review Changes"
+      },
+      {
+        "command": "codech.worktrees",
+        "title": "Codech: Open Worktrees"
+      },
+      {
+        "command": "codech.graph",
+        "title": "Codech: Open Graph"
+      },
+      {
+        "command": "codech.newChat",
+        "title": "Codech: New Chat"
+      },
+      {
+        "command": "codech.setApiKey",
+        "title": "Codech: Set OpenAI API Key"
+      },
+      {
+        "command": "codech.login",
+        "title": "Codech: Sign In with ChatGPT"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codech.chats",
+          "title": "Codech Chats",
+          "icon": "media/chat.svg"
+        },
+        {
+          "id": "codech.knowledgeContainer",
+          "title": "Knowledge",
+          "icon": "media/book.svg"
+        },
+        {
+          "id": "codech.reviewContainer",
+          "title": "Code Review",
+          "icon": "media/review.svg"
+        }
+      ]
+    },
+    "views": {
+      "codech.chats": [
+        {
+          "id": "codech.sessions",
+          "name": "Conversations"
+        }
+      ],
+      "codech.knowledgeContainer": [
+        {
+          "id": "codech.notes",
+          "name": "Knowledge Vault"
+        }
+      ],
+      "codech.reviewContainer": [
+        {
+          "id": "codech.changes",
+          "name": "Review & Worktrees"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "codech.open",
+        "key": "ctrl+alt+space",
+        "mac": "cmd+alt+space"
+      },
+      {
+        "command": "codech.newChat",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n"
+      }
+    ],
+    "themes": [
+      {
+        "label": "Codech Forest",
+        "uiTheme": "vs-dark",
+        "path": "./themes/forest.json"
+      }
+    ],
+    "configuration": {
+      "title": "Codech IDE",
+      "properties": {
+        "codech.codexPath": {
+          "type": "string",
+          "default": "codex",
+          "description": "Codex executable. Uses an isolated Codech auth/config home."
+        },
+        "codech.defaultProvider": {
+          "type": "string",
+          "enum": [
+            "codex",
+            "api"
+          ],
+          "default": "codex"
+        },
+        "codech.model": {
+          "type": "string",
+          "default": "gpt-6.1-terra",
+          "description": "Requested model; availability depends on provider/account."
+        },
+        "codech.contextChars": {
+          "type": "number",
+          "default": 24000,
+          "minimum": 4000,
+          "maximum": 80000
+        },
+        "codech.apiMaxSteps": {
+          "type": "number",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 20
+        },
+        "codech.graphitiUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8000/mcp/",
+          "description": "Optional local Graphiti Streamable HTTP MCP endpoint. Start the service separately."
+        }
+      }
+    }
+  }
+}

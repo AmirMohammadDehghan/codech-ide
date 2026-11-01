@@ -1,0 +1,82 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "Codech Forest",
+  "type": "dark",
+  "colors": {
+    "focusBorder": "#7b9b79",
+    "foreground": "#cfddd1",
+    "editor.background": "#121a16",
+    "editor.foreground": "#ccd9cf",
+    "sideBar.background": "#0e1411",
+    "sideBar.foreground": "#94a99b",
+    "activityBar.background": "#0a100d",
+    "activityBar.foreground": "#b9ceae",
+    "activityBarBadge.background": "#8baf8b",
+    "activityBarBadge.foreground": "#122019",
+    "titleBar.activeBackground": "#101813",
+    "titleBar.activeForeground": "#a2b9a8",
+    "statusBar.background": "#18271d",
+    "statusBar.foreground": "#97b19d",
+    "tab.activeBackground": "#1c2c21",
+    "tab.inactiveBackground": "#101813",
+    "panel.background": "#121b16",
+    "panel.border": "#304434",
+    "button.background": "#afbe87",
+    "button.foreground": "#203123",
+    "input.background": "#203026",
+    "input.border": "#405840",
+    "input.foreground": "#cfddce",
+    "list.activeSelectionBackground": "#2a4030",
+    "list.hoverBackground": "#213027",
+    "editorGroupHeader.tabsBackground": "#101813",
+    "editorLineNumber.foreground": "#526c5b",
+    "editor.selectionBackground": "#3c5945",
+    "terminal.background": "#101813",
+    "gitDecoration.modifiedResourceForeground": "#caba7d",
+    "gitDecoration.untrackedResourceForeground": "#8abc92"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "comment"
+      ],
+      "settings": {
+        "foreground": "#718c77",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": [
+        "string"
+      ],
+      "settings": {
+        "foreground": "#b6ca8e"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "storage"
+      ],
+      "settings": {
+        "foreground": "#c3a8be"
+      }
+    },
+    {
+      "scope": [
+        "entity.name.function"
+      ],
+      "settings": {
+        "foreground": "#8dbfa5"
+      }
+    },
+    {
+      "scope": [
+        "constant.numeric"
+      ],
+      "settings": {
+        "foreground": "#d2bf83"
+      }
+    }
+  ]
+}
