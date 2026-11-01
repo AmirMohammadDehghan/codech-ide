@@ -20,3 +20,8 @@ Provider capabilities, model availability and dependency versions can change. Th
 - [Inno Setup downloads and verification](https://jrsoftware.org/isdl.php).
 - [GPT-6 Luna API model](https://developers.openai.com/api/docs/models/gpt-6-luna).
 - [Responses conversation history and billing](https://developers.openai.com/api/docs/guides/migrate-to-responses).
+
+- [Integrated Code-OSS browser](https://code.visualstudio.com/docs/debugtest/integrated-browser).
+- [Proposed browser extension API](https://github.com/microsoft/vscode/blob/main/src/vscode-dts/vscode.proposed.browser.d.ts).
+- [Whisper.cpp CPU runtime b5454](https://github.com/ggml-org/whisper.cpp/releases/tag/b5454).
+- [Whisper.cpp multilingual models](https://huggingface.co/ggerganov/whisper.cpp).

@@ -1,6 +1,14 @@
 # Verification record — 2026-11-01
 
-## Passed locally for 0.2
+## Passed locally for 0.3
+
+- Strict TypeScript and 22 automated tests, including Python/Markdown target selection, bounded target JSON, code/vault graph updates, Git-ignore handling, silent-audio rejection and Codex wire enum regressions.
+- Real standalone Extension Host: unsaved file selection and symbol, context retained when focusing the composer, modified diff target, real browser navigation, DOM element capture with computed style, scrolling/reveal and theme switching.
+- Real Codex 0.166.0 generated schema and request envelopes: thread/start accepted, thread/resume reached runtime lookup (an empty thread has no rollout), turn/start envelope accepted in an isolated logged-out profile. No paid model task was evaluated.
+- Native Codech panel visually inspected; no microphone recording was started.
+- Whisper.cpp CPU runtime/model verified by SHA-256 and successfully loaded with Persian language configuration. Silence produced hallucinated text in a raw engine check, so a tested audio-energy gate was added before production inference. Recorder C# compiled successfully. Real microphone capture and Persian-speaker accuracy remain unverified.
+
+## Previous 0.2 validation
 
 - Normal dependency installation, package-lock generation, strict npm run typecheck, npm test and standard vsce packaging.
 - **17 automated tests** covering workspace containment, credential exclusion, Windows junctions, notes, graphs, worktrees, exact-content review and staged-file preservation; API tool proposals, bounded output, usage guard/accounting; context deltas, edit/deletion detection, scope invalidation and bounded history replay; Graphiti MCP scoping; Codex JSON-RPC.
@@ -18,3 +26,5 @@ No paid API turn or ChatGPT entitlement/inference was exercised. Real Luna/Terra
 The optional Graphiti service was not installed; its adapter has mocked transport tests. Obsidian plugin execution and PyCharm parity are not implemented. Only Windows x64 was packaged. We did not compile the Code-OSS engine from source, sign binaries, test automatic updating or claim bit-for-bit installer reproducibility.
 
 GitHub CI passed on Windows and Linux after a test comparison was corrected to canonicalize Windows worktree paths. Run: https://github.com/AmirMohammadDehghan/codech-ide/actions/runs/41305575512 . The desktop workflow remains manual and is not claimed to have run remotely.
+
+0.3 composer/inspector browser tests additionally checked Persian draft and caret preservation during context updates, a 540px panel without horizontal overflow, voice text appended without automatic send, and removal of secret attributes/script text from selected-element context. Screenshots are labeled fixtures.

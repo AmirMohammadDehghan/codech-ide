@@ -52,6 +52,16 @@ export class Workspace {
         throw new Error('Only text files under 400 KB can be read.'); const data = await fs.readFile(file, 'utf8'); if (data.includes('\0'))
         throw new Error('Binary file.'); return data; }
     async files(max = 2500) {
+        try {
+            const listed = (await this.git(['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', '.'])).split('\0');
+            const allowed = [...new Set(listed)].filter(p => p && !sensitive.test(p) && !p.split('/').some(x => ignored.has(x)));
+            const result: string[] = [];
+            for (const p of allowed) {
+                if (result.length >= max) break;
+                try { const stat = await fs.lstat(await this.safe(p)); if (stat.isFile()) result.push(p); } catch { }
+            }
+            return result.sort();
+        } catch { /* A plain vault does not have to be a Git repository. */ }
         const files: string[] = [];
         const walk = async (dir: string) => { for (const entry of await fs.readdir(path.join(this.root, dir), { withFileTypes: true })) {
             if (files.length >= max)

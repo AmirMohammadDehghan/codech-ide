@@ -14,6 +14,7 @@ const tools = [
     schema('search_code', 'Find literal text in source files. Returns bounded matches.', { query: { type: 'string' } }, ['query']),
     schema('inspect_git', 'Inspect current git changes.', {}, []),
     schema('code_graph', 'Get the bounded local static import graph; no model or database is needed.', {}, []),
+    schema('read_reference', 'Read a file in a user-added reference source. Source IDs and paths are in the context. Read-only.', { source: { type: 'string' }, path: { type: 'string' }, start_line: { type: 'integer' } }, ['source', 'path', 'start_line']),
     schema('propose_edit', 'Propose full replacement text for a file. The user must review and apply it; this does not write files.', { path: { type: 'string' }, content: { type: 'string' }, reason: { type: 'string' } }, ['path', 'content', 'reason']),
     schema('run_check', 'Run a predefined npm check without a shell. Only test, typecheck, and lint scripts are supported.', { name: { type: 'string', enum: ['test', 'typecheck', 'lint'] } }, ['name'])
 ];
@@ -32,6 +33,8 @@ export async function apiTurn(options: {
     onTool: (s: string) => void;
     onProposal: (p: Proposal) => void;
     approveCheck: (name: string) => Promise<boolean>;
+    readReference?: (source: string, file: string, start: number) => Promise<unknown>;
+    projectGraph?: () => Promise<unknown>;
 }) {
     const { workspace: ws } = options;
     const maxOutput = Math.max(512, Math.min(options.maxOutputTokens || 3000, 12000));
@@ -76,6 +79,9 @@ export async function apiTurn(options: {
             try {
                 const args = JSON.parse(call.arguments);
                 switch (call.name) {
+                    case 'read_reference':
+                        if (!options.readReference) throw new Error('No reference sources configured.');
+                        output = await options.readReference(args.source, args.path, args.start_line); break;
                     case 'list_files':
                         output = (await ws.files()).slice(0, 600);
                         break;
@@ -107,7 +113,7 @@ export async function apiTurn(options: {
                         output = (await ws.changes()).map(({ path, status, revision }) => ({ path, status, revision }));
                         break;
                     case 'code_graph':
-                        output = await ws.codeGraph();
+                        output = options.projectGraph ? await options.projectGraph() : await ws.codeGraph();
                         break;
                     case 'propose_edit': {
                         await ws.safe(args.path, true);

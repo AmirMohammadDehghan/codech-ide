@@ -32,6 +32,7 @@ Object.assign(product, await json(path.join(root, 'desktop/product.overrides.jso
   codechVersion: version, downloadUrl: 'https://github.com/AmirMohammadDehghan/codech-ide/releases',
   documentationUrl: 'https://github.com/AmirMohammadDehghan/codech-ide#readme', releaseNotesUrl: 'https://github.com/AmirMohammadDehghan/codech-ide/releases'
 });
+product.extensionEnabledApiProposals = { ...product.extensionEnabledApiProposals, 'codech.codech-workbench': ['browser'] };
 // An upstream automatic update would overwrite our distribution. Updates are manual Codech installers.
 delete product.updateUrl;
 delete product.win32arm64AppId;

@@ -2,28 +2,34 @@
 <h1 align="center">Codech IDE</h1>
 <p align="center">Code. Conversations. Knowledge. One workbench.</p>
 
-**0.2 alpha — independent Windows x64 desktop · MIT**
+**0.3 alpha — independent Windows x64 desktop · MIT**
 
-Codech brings central agent conversations, native editors, local Markdown knowledge, code graphs and human review into one development environment. The standalone app packages the official VSCodium Code-OSS runtime with Codech branding, its built-in workbench and Codex CLI. It does not require another VS Code installation.
+Codech brings a persistent agent input panel, native editors, local Markdown knowledge, code graphs and human review into one development environment. The standalone app packages the official VSCodium Code-OSS runtime with Codech branding, its built-in workbench and Codex CLI. It does not require another VS Code installation.
 
-[Download Windows installer](https://github.com/AmirMohammadDehghan/codech-ide/releases/tag/v0.2.0) · [راهنمای فارسی](docs/FA.md) · [Build instructions](docs/DESKTOP.md)
+[Download Windows installer](https://github.com/AmirMohammadDehghan/codech-ide/releases/tag/v0.3.0) · [راهنمای فارسی](docs/FA.md) · [Build instructions](docs/DESKTOP.md)
 
-![Codech workbench preview](docs/images/workbench.png)
+[New workspace, browser and voice guide](docs/WORKSPACE-0.3.md)
+
+![Codech persistent composer — synthetic fixture](docs/images/composer-0.3.png)
 
 ## Install
 
-Run **CodechIDE-Setup-0.2.0-x64.exe**. Installation is per-user, with a Start menu entry and an uninstaller. Settings and extensions are separate from VS Code. The current installer is unsigned.
+Run **CodechIDE-Setup-0.3.0-x64.exe**. Installation is per-user, with a Start menu entry and an uninstaller. Settings and extensions are separate from VS Code. The current installer is unsigned.
 
-Open a project folder, then use the central conversation. Install compatible extensions from **Open VSX** or **Install from VSIX**. Use **Theme** or **Ctrl+K Ctrl+T** to select **Graphite**, **Paper**, **Forest**, or an extension theme. Chat and knowledge follow the native theme. The Extensions page links to IntelliJ/PyCharm keymap search.
+Open a project folder. The **Ask Codech** input stays below code, notes, diffs and browser tabs; **Ctrl+Alt+Space** focuses it. Conversation history opens separately. Install compatible extensions from **Open VSX** or **Install from VSIX**. Use **Theme** or **Ctrl+K Ctrl+T** to select **Graphite**, **Paper**, **Forest**, or an extension theme. Chat and knowledge follow the native theme. The Extensions page links to IntelliJ/PyCharm keymap search.
 
 Codex is bundled and starts on demand. Use **Sign in with ChatGPT**, or choose the API provider and set an OpenAI API key in SecretStorage. Available models and usage limits depend on the account. Git and language toolchains such as Python/Node remain separate prerequisites.
 
 ## What works
 
-- Central chat, native source/diff editors beside it, activity-bar entries and saved conversations.
+- Persistent bottom composer, separate conversation history, unsaved editor selections, cursor, enclosing symbol/heading and original/modified diff context.
+- Integrated Chromium browser, in-editor web search, element picker, DOM/computed-style details, local source lookup and scroll/reveal controls.
+- Offline Persian dictation with Whisper.cpp (optional verified ~199 MB download), editable transcripts, no automatic send, no always-running speech service.
+- Codechi animated companion, theme-aware and optional.
+- User-added reference folders/vaults, skill import and MCP configuration.
 - Codex App Server streaming, model catalog, official ChatGPT sign-in flow, approvals, continuation and interruption; isolated Codech auth/config home.
 - Responses API with prepared file, line-range, search, Git, local graph, check and edit-proposal tools; review before applying API edits.
-- Local Markdown knowledge, wikilinks and linked-note graph; bounded JS/TS/Python import graph.
+- Unified local graph of code and documents: imports, wikilinks, Markdown links and symbol names; relevant neighbors enter the context budget.
 - Git worktrees, status, native diffs, approvals bound to exact contents, reviewed commits preserving unrelated staged files.
 - Optional project-scoped Graphiti MCP fact search.
 - Native extension installation, VSIX support and theme integration. Dracula from Open VSX was installed and detected in the standalone host.

@@ -7,3 +7,6 @@ Use **Theme** for Graphite, Paper, Forest or third-party themes. API mode uses S
 The standalone Windows distribution includes Codex. When installing only this VSIX into another editor, install Codex separately or configure codech.codexPath.
 
 Obsidian plugin execution is not implemented. See the [repository](https://github.com/AmirMohammadDehghan/codech-ide) for the standalone installer, build instructions, validation and compatibility limits.
+
+
+0.3 adds a persistent bottom composer, current editor/diff context, browser element inspection, sources/skills/MCP controls, offline Persian dictation and Codechi. Full browser API support requires the standalone Codech distribution. See the repository workspace guide.

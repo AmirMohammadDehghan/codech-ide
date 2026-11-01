@@ -6,7 +6,7 @@ This is a verified upstream binary distribution with Codech changes, **not a cla
 
 ## Installation
 
-Run `CodechIDE-Setup-0.2.0-x64.exe`. The installer places Codech in `%LOCALAPPDATA%\Programs\Codech IDE`, adds a Start menu entry and an uninstaller, and offers a desktop shortcut. It needs no administrator privileges. Current Codech binaries and installer are unsigned.
+Run `CodechIDE-Setup-0.3.0-x64.exe`. The installer places Codech in `%LOCALAPPDATA%\Programs\Codech IDE`, adds a Start menu entry and an uninstaller, and offers a desktop shortcut. It needs no administrator privileges. Current Codech binaries and installer are unsigned.
 
 User data: `%APPDATA%\Codech IDE`. Extensions: `%USERPROFILE%\.codech-ide\extensions`. Uninstall preserves those user directories. The generated `release/Codech IDE` directory also runs directly. An empty `data` directory beside Codech.exe enables upstream portable mode; the builder refuses to overwrite portable user data.
 

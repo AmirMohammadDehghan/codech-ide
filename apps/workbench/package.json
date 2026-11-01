@@ -1,7 +1,7 @@
 {
   "name": "codech-workbench",
   "displayName": "Codech IDE — Workbench",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "codech",
   "description": "Agent-first workbench with central chat, local Markdown knowledge, worktrees and human code review.",
   "license": "MIT",
@@ -64,6 +64,30 @@
       {
         "command": "codech.settings",
         "title": "Codech: Agent Budget Settings"
+      },
+      {
+        "command": "codech.focusInput",
+        "title": "Codech: Focus AI Composer"
+      },
+      {
+        "command": "codech.browser",
+        "title": "Codech: Open Browser / Search Web"
+      },
+      {
+        "command": "codech.inspect",
+        "title": "Codech: Inspect Browser Element"
+      },
+      {
+        "command": "codech.addSource",
+        "title": "Codech: Add Source / Knowledge Vault"
+      },
+      {
+        "command": "codech.pet",
+        "title": "Codech: Toggle Codechi Companion"
+      },
+      {
+        "command": "codech.voice",
+        "title": "Codech: Offline Persian Dictation"
       }
     ],
     "viewsContainers": {
@@ -82,6 +106,13 @@
           "id": "codech-reviewContainer",
           "title": "Code Review",
           "icon": "media/review.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "codech-agent",
+          "title": "Codech",
+          "icon": "media/chat.svg"
         }
       ]
     },
@@ -103,11 +134,18 @@
           "id": "codech.changes",
           "name": "Review & Worktrees"
         }
+      ],
+      "codech-agent": [
+        {
+          "id": "codech.composer",
+          "name": "Ask Codech",
+          "type": "webview"
+        }
       ]
     },
     "keybindings": [
       {
-        "command": "codech.open",
+        "command": "codech.focusInput",
         "key": "ctrl+alt+space",
         "mac": "cmd+alt+space"
       },
@@ -115,6 +153,18 @@
         "command": "codech.newChat",
         "key": "ctrl+alt+n",
         "mac": "cmd+alt+n"
+      },
+      {
+        "command": "codech.browser",
+        "key": "ctrl+alt+b"
+      },
+      {
+        "command": "codech.inspect",
+        "key": "ctrl+alt+i"
+      },
+      {
+        "command": "codech.voice",
+        "key": "ctrl+alt+v"
       }
     ],
     "themes": [
@@ -203,7 +253,29 @@
         "codech.openOnStartup": {
           "type": "boolean",
           "default": true,
-          "description": "Open the central Codech workbench on editor startup."
+          "description": "Open the persistent Codech input panel on startup."
+        },
+        "codech.petEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the animated Codechi companion in the input panel."
+        },
+        "codech.searchEngine": {
+          "type": "string",
+          "enum": [
+            "duckduckgo",
+            "google",
+            "bing"
+          ],
+          "default": "duckduckgo",
+          "description": "Search provider opened inside the integrated browser."
+        },
+        "codech.voiceThreads": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 16,
+          "description": "CPU threads for offline Whisper dictation."
         }
       }
     }
@@ -211,5 +283,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/AmirMohammadDehghan/codech-ide.git"
-  }
+  },
+  "enabledApiProposals": [
+    "browser"
+  ]
 }

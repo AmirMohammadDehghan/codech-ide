@@ -54,7 +54,7 @@ export class CodexBridge {
                 this.onEvent(m);
         });
         try {
-            await this.request('initialize', { clientInfo: { name: 'codech_ide', title: 'Codech IDE', version: '0.2.0' } });
+            await this.request('initialize', { clientInfo: { name: 'codech_ide', title: 'Codech IDE', version: '0.3.0' } });
             this.notify('initialized', {});
         }
         catch (error) {

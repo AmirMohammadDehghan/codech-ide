@@ -5,4 +5,10 @@ dist/codex.cjs
 dist/context.cjs
 dist/core.cjs
 dist/graphiti.cjs
+dist/browser.cjs
+dist/voice.cjs
+dist/target.cjs
+dist/audio.cjs
+dist/project-graph.cjs
+dist/codex-protocol.cjs
 .vscodeignore
