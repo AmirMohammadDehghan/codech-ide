@@ -21,7 +21,7 @@ export interface Note {
     text: string;
     links: string[];
 }
-const ignored = new Set(['.git', 'node_modules', '.runtime', '.upstream', '.venv', 'venv', 'dist', 'build', '__pycache__', '.next', '.obsidian']);
+const ignored = new Set(['.git', 'node_modules', '.runtime', '.cache', '.upstream', 'release', '.venv', 'venv', 'dist', 'build', '__pycache__', '.next', '.obsidian']);
 const sensitive = /(^|\/)(\.env(?:\..*)?|auth\.json|credentials(?:\..*)?|id_rsa|id_ed25519|.*\.(?:pem|key|p12))$/i;
 export class Workspace {
     approvals = new Map<string, string>();
@@ -83,26 +83,34 @@ export class Workspace {
         await fs.writeFile(target, text, { encoding: 'utf8', flag: 'wx' });
         return `.codech/knowledge/${title}.md`;
     }
-    async context(query: string, budget = 24000) {
+    async context(query: string, budget = 12000) {
         const words = query.toLocaleLowerCase().split(/[^\p{L}\p{N}_]+/u).filter(x => x.length > 2);
         const files = await this.files();
         const candidates = files.filter(x => /AGENTS\.md$|README\.md$|package\.json$|pyproject\.toml$|\.codech\/knowledge\/.*\.md$/i.test(x));
         const rank = (p: string) => words.reduce((n, w) => n + (p.toLowerCase().includes(w) ? 10 : 0), /AGENTS\.md$/.test(p) ? 100 : /README\.md$/.test(p) ? 30 : 0);
         candidates.sort((a, b) => rank(b) - rank(a) || a.localeCompare(b));
-        let text = 'Workspace map (bounded; request more files with tools):\n' + files.slice(0, 160).join('\n') + '\n';
+        const map = ('Workspace map (bounded; request more files with tools):\n' + files.slice(0, 160).join('\n') + '\n').slice(0, Math.floor(budget / 4));
+        const blocks: Record<string, string> = { '@map': map };
+        let text = map;
         const sources: string[] = [];
         for (const p of candidates.slice(0, 14)) {
             if (text.length >= budget)
                 break;
             try {
                 const content = await this.read(p);
-                const block = `\n<workspace-data path=${JSON.stringify(p)}>\n${content.slice(0, Math.min(6000, budget - text.length))}\n</workspace-data>\n`;
+                const header = `\n<workspace-data path=${JSON.stringify(p)}>\n`;
+                const footer = '\n</workspace-data>\n';
+                const available = budget - text.length - header.length - footer.length - 40;
+                if (available <= 0) break;
+                const excerpt = content.slice(0, Math.min(4000, available));
+                const block = header + excerpt + (excerpt.length < content.length ? '\n[Excerpt; read file for remaining text.]' : '') + footer;
                 text += block;
+                blocks[p] = block;
                 sources.push(p);
             }
             catch { }
         }
-        return { text: text.slice(0, budget), chars: Math.min(text.length, budget), sources, fingerprint: digest(text.slice(0, budget)) };
+        return { text, chars: text.length, sources, fingerprint: digest(text), blocks };
     }
     async changes(): Promise<Change[]> {
         const prefix = (await this.git(['rev-parse', '--show-prefix'])).trim();

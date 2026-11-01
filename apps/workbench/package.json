@@ -1,7 +1,7 @@
 {
   "name": "codech-workbench",
   "displayName": "Codech IDE — Workbench",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "codech",
   "description": "Agent-first workbench with central chat, local Markdown knowledge, worktrees and human code review.",
   "license": "MIT",
@@ -56,41 +56,49 @@
       {
         "command": "codech.login",
         "title": "Codech: Sign In with ChatGPT"
+      },
+      {
+        "command": "codech.appearance",
+        "title": "Codech: Change Color Theme"
+      },
+      {
+        "command": "codech.settings",
+        "title": "Codech: Agent Budget Settings"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "codech.chats",
+          "id": "codech-chats",
           "title": "Codech Chats",
           "icon": "media/chat.svg"
         },
         {
-          "id": "codech.knowledgeContainer",
+          "id": "codech-knowledgeContainer",
           "title": "Knowledge",
           "icon": "media/book.svg"
         },
         {
-          "id": "codech.reviewContainer",
+          "id": "codech-reviewContainer",
           "title": "Code Review",
           "icon": "media/review.svg"
         }
       ]
     },
     "views": {
-      "codech.chats": [
+      "codech-chats": [
         {
           "id": "codech.sessions",
           "name": "Conversations"
         }
       ],
-      "codech.knowledgeContainer": [
+      "codech-knowledgeContainer": [
         {
           "id": "codech.notes",
           "name": "Knowledge Vault"
         }
       ],
-      "codech.reviewContainer": [
+      "codech-reviewContainer": [
         {
           "id": "codech.changes",
           "name": "Review & Worktrees"
@@ -111,6 +119,16 @@
     ],
     "themes": [
       {
+        "label": "Codech Graphite",
+        "uiTheme": "vs-dark",
+        "path": "./themes/graphite.json"
+      },
+      {
+        "label": "Codech Paper",
+        "uiTheme": "vs",
+        "path": "./themes/paper.json"
+      },
+      {
         "label": "Codech Forest",
         "uiTheme": "vs-dark",
         "path": "./themes/forest.json"
@@ -121,8 +139,8 @@
       "properties": {
         "codech.codexPath": {
           "type": "string",
-          "default": "codex",
-          "description": "Codex executable. Uses an isolated Codech auth/config home."
+          "default": "",
+          "description": "Leave empty to use the bundled Codex runtime, then PATH as fallback. Custom executable is optional."
         },
         "codech.defaultProvider": {
           "type": "string",
@@ -139,13 +157,13 @@
         },
         "codech.contextChars": {
           "type": "number",
-          "default": 24000,
+          "default": 12000,
           "minimum": 4000,
           "maximum": 80000
         },
         "codech.apiMaxSteps": {
           "type": "number",
-          "default": 8,
+          "default": 6,
           "minimum": 1,
           "maximum": 20
         },
@@ -153,8 +171,45 @@
           "type": "string",
           "default": "http://127.0.0.1:8000/mcp/",
           "description": "Optional local Graphiti Streamable HTTP MCP endpoint. Start the service separately."
+        },
+        "codech.apiMaxOutputTokens": {
+          "type": "number",
+          "default": 3000,
+          "minimum": 512,
+          "maximum": 12000,
+          "description": "Maximum output tokens per API response, including reasoning."
+        },
+        "codech.apiUsageGuard": {
+          "type": "number",
+          "default": 16000,
+          "minimum": 2000,
+          "maximum": 100000,
+          "description": "Soft per-turn API token guard. Evaluated after each response; it is not a hard dollar limit."
+        },
+        "codech.toolOutputChars": {
+          "type": "number",
+          "default": 12000,
+          "minimum": 1000,
+          "maximum": 40000,
+          "description": "Maximum characters returned by one API tool."
+        },
+        "codech.apiHistoryTurns": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Renew the API response chain after this many completed turns, replaying at most four recent messages and fresh project context. Older conversation history is omitted."
+        },
+        "codech.openOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the central Codech workbench on editor startup."
         }
       }
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AmirMohammadDehghan/codech-ide.git"
   }
 }

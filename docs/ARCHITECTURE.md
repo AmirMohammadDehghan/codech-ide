@@ -22,17 +22,17 @@ The renderer has no Node access, credentials or direct shell access. It sends a 
 
 ### Context plane
 
-Scan a bounded file tree while skipping dependency, build, Git, environment and credential paths. Rank project instructions, READMEs, manifests and knowledge notes. Construct a context packet with a maximum character budget, source paths and content fingerprint. Its displayed token count is an estimate; multilingual tokenization is not accurately measured by characters divided by four.
+Scan a bounded file tree while skipping dependency, build, Git, environment and credential paths. Rank project instructions, READMEs, manifests and knowledge notes. Construct a context packet with a maximum character budget, source paths and content fingerprint. The UI displays newly attached characters, not a token estimate.
 
-The current packet is regenerated each turn and added to that turn's prompt. Persistent incremental indexing, content-addressed context reuse, semantic retrieval and precise token accounting are planned; they are not already implemented. File tools can obtain additional context when the model needs it.
+The file tree is rescanned each turn to detect current changes. Session fingerprints omit unchanged excerpts from continuing conversations. Scope/model changes, provider failures, fresh API chains and periodic refresh force full context; Codex compaction invalidates the snapshot. Snapshots are accepted only after provider acceptance. This is not a persistent symbol index or automatic semantic retrieval. File tools fetch additional source on demand.
 
 ### Execution plane
 
 The Codex provider uses the official app-server's agent loop, prepared tools, permissions and supported skills/MCP configuration. It starts with a Codech-specific `CODEX_HOME`, `unlessTrusted` approval policy, a workspace-write sandbox and network disabled for the turn. App-server's own OS support and policy enforcement determine actual sandbox behavior. Codech does not independently implement an OS sandbox.
 
-The API provider has `list_files`, `read_file`, `search_code`, `inspect_git`, `propose_edit`, and `run_check`. It never accepts an arbitrary shell string from the model. The check tool accepts only the fixed `test`, `typecheck` and `lint` names, then asks before executing project code. On Windows it invokes a fixed `npm run <approved-name>` command through the command interpreter; arguments are validated against the fixed allowlist.
+The API provider has `list_files`, `read_file` with line ranges, `search_code`, `inspect_git`, `code_graph`, `propose_edit`, and `run_check`. It never accepts an arbitrary shell string from the model. The check tool accepts only the fixed `test`, `typecheck` and `lint` names, then asks before executing project code. On Windows it invokes a fixed `npm run <approved-name>` command through the command interpreter; arguments are validated against the fixed allowlist.
 
-The API loop has step and usage guards. Its 24,000-token guard is evaluated after an inference response, so the final response may exceed the guard. It is not a hard billing cap. API conversations use server-side stored Responses and `previous_response_id`; this is not a zero-retention mode.
+The API loop has step and usage guards. Its configurable 16,000-token default guard is evaluated after an inference response, so the final response may exceed the guard. It is not a hard billing cap. API conversations use stored Responses and previous_response_id; this is not zero retention. Each response is limited to 3,000 output tokens by default. Tool output is bounded. After four completed turns by default, the chain renews with the original request, up to four recent excerpts and fresh project context; intervening history is explicitly omitted. Recorded input/output/cache usage comes from the provider response. This history window is configurable, and context-character reduction is not equivalent to lower billing.
 
 ### Review plane
 

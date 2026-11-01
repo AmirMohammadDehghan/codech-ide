@@ -1,0 +1,9 @@
+{
+  "benchmark": "deterministic synthetic workspace, no inference",
+  "files": 102,
+  "coldChars": 6944,
+  "unchangedFollowupChars": 85,
+  "changedFollowupChars": 1778,
+  "unchangedReductionPercent": 98.78,
+  "measures": "newly attached project-context characters, NOT billed tokens, dollars or model quality"
+}

@@ -1,0 +1,8 @@
+src/**
+dist/*.map
+dist/api.cjs
+dist/codex.cjs
+dist/context.cjs
+dist/core.cjs
+dist/graphiti.cjs
+.vscodeignore

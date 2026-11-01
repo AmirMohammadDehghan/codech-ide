@@ -1,7 +1,9 @@
 # Codech IDE Workbench
 
-Development alpha for VS Code and Code-OSS. Open **Codech: Open Workbench** to use the central chat, local Markdown vault, source graph, worktrees and code review. Source and native diff editors open beside the conversation.
+Codech 0.2 alpha for VS Code and Code-OSS. Open **Codech: Open Workbench** for central chat, Markdown knowledge, import graph, worktrees and code review. Native source/diff editors open beside the conversation.
 
-Codex App Server supports ChatGPT sign-in through a separately installed Codex executable. API mode uses an OpenAI API key stored in SecretStorage. Neither provider connects or incurs inference usage until you choose it and send a message.
+Use **Theme** for Graphite, Paper, Forest or third-party themes. API mode uses SecretStorage and bounded prepared tools. Codex uses official ChatGPT authentication in a separate Codech home.
 
-Obsidian plugin execution and an independent desktop installer are not included in this release. See the root repository documentation for current capabilities and compatibility boundaries.
+The standalone Windows distribution includes Codex. When installing only this VSIX into another editor, install Codex separately or configure codech.codexPath.
+
+Obsidian plugin execution is not implemented. See the [repository](https://github.com/AmirMohammadDehghan/codech-ide) for the standalone installer, build instructions, validation and compatibility limits.

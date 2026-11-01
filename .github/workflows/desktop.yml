@@ -1,0 +1,21 @@
+name: Build Windows desktop
+on:
+  workflow_dispatch:
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run desktop:build
+      - run: node scripts/setup-inno.mjs
+      - run: npm run desktop:installer
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CodechIDE-Windows-x64
+          path: release/CodechIDE-Setup-*.exe

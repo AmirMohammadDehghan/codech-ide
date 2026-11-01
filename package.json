@@ -1,6 +1,6 @@
 {
   "name": "codech-ide",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Codech IDE development monorepo — Code-OSS workbench and agent harness",
   "license": "MIT",
@@ -11,16 +11,21 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node --test test/*.test.cjs",
-    "package": "npm run build && cd apps/workbench && vsce package --allow-missing-repository --no-dependencies --out ../../codech-workbench-0.1.0.vsix",
+    "package": "npm run build && cd apps/workbench && vsce package --allow-missing-repository --no-dependencies --out ../../codech-workbench-0.2.0.vsix",
     "preview": "node scripts/preview.mjs",
     "dev": "npm run build && node scripts/launch.mjs",
-    "desktop:prepare": "node scripts/prepare-code-oss.mjs"
+    "desktop:prepare": "node scripts/prepare-code-oss.mjs",
+    "desktop:build": "npm run build && node scripts/build-desktop.mjs",
+    "desktop:installer": "node scripts/build-installer.mjs"
   },
   "devDependencies": {
     "@types/node": "22.18.6",
     "@types/vscode": "1.95.0",
     "@vscode/vsce": "4.1.0",
     "esbuild": "0.28.2",
+    "extract-zip": "2.0.1",
+    "resedit": "3.1.0",
+    "sharp": "0.35.5",
     "typescript": "5.9.3"
   }
 }

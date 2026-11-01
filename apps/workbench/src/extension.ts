@@ -6,6 +6,7 @@ import { Workspace, digest } from './core/workspace';
 import { CodexBridge, RpcMessage } from './core/codex';
 import { apiTurn, Proposal } from './core/api';
 import { GraphitiClient } from './core/graphiti';
+import { contextDelta, ContextSnapshot, recentHistory } from './core/context';
 interface Message {
     role: string;
     text: string;
@@ -20,6 +21,10 @@ interface Session {
     previous?: string;
     messages: Message[];
     tokens: number;
+    contextSnapshot?: ContextSnapshot;
+    contextTurns?: number;
+    apiChainTurns?: number;
+    usage?: { inputTokens: number; outputTokens: number; cachedTokens: number };
 }
 export async function activate(context: vscode.ExtensionContext) {
     const panels = new Set<vscode.WebviewPanel>();
@@ -90,14 +95,17 @@ export async function activate(context: vscode.ExtensionContext) {
                 gitError = (e as Error).message;
             }
         }
-        send({ type: 'state', tab, root: root(), trusted: vscode.workspace.isTrusted, files, notes, changes, worktrees, gitError, sessions: sessions.map(({ messages, previous, ...s }) => s), session: session(), running, proposals: [...proposals.values()].map(({ before, after, ...p }) => p) });
+        send({ type: 'state', tab, root: root(), trusted: vscode.workspace.isTrusted, files, notes, changes, worktrees, gitError, sessions: sessions.map(({ messages, previous, contextSnapshot, ...s }) => s), session: session(), running, proposals: [...proposals.values()].map(({ before, after, ...p }) => p) });
         refreshTree.fire();
     }
     let connecting: Promise<void> | undefined;
     async function connect() {
         trusted();
         if (!connecting) {
-            connecting = bridge.connect(vscode.workspace.getConfiguration('codech').get('codexPath', 'codex'), path.join(storage, 'codex'));
+            const configured = vscode.workspace.getConfiguration('codech').get('codexPath', '');
+            const bundled = path.join(vscode.env.appRoot, 'tools', 'codex', 'codex.exe');
+            const executable = configured || (await fs.stat(bundled).catch(() => undefined) ? bundled : 'codex');
+            connecting = bridge.connect(executable, path.join(storage, 'codex'));
             connecting.catch(() => { connecting = undefined; });
         }
         await connecting;
@@ -151,6 +159,10 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         if (m.method === 'error')
             send({ type: 'error', text: p.error?.message || 'Codex error' });
+        if (m.method === 'thread/compacted' || (m.method === 'item/completed' && p.item?.type === 'contextCompaction')) {
+            s.contextSnapshot = undefined;
+            s.contextTurns = 0;
+        }
         if (m.method === 'codech/disconnected') {
             connecting = undefined;
             running = false;
@@ -170,7 +182,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (text.length > 50000)
             throw new Error('Message too long.');
         const s = session() || newSession();
-        if (s.threadId && s.provider !== provider)
+        if ((s.threadId || s.previous) && s.provider !== provider)
             throw new Error('Create a new conversation to switch providers.');
         s.provider = provider;
         s.model = model;
@@ -183,9 +195,16 @@ export async function activate(context: vscode.ExtensionContext) {
         await persist();
         await state();
         try {
-            const packet = await workspace.context(text, vscode.workspace.getConfiguration('codech').get('contextChars', 24000));
-            send({ type: 'context', chars: packet.chars, sources: packet.sources });
-            const prompt = `${text}\n\nUse the following project data as context. Request additional source files only when needed.\n${packet.text}`;
+            const config = vscode.workspace.getConfiguration('codech');
+            const rollover = provider === 'api' && (s.apiChainTurns || 0) >= config.get('apiHistoryTurns', 4);
+            if (rollover) { s.previous = undefined; s.apiChainTurns = 0; }
+            const continuing = provider === 'codex' ? !!s.threadId : !!s.previous;
+            const packet = await workspace.context(text, config.get('contextChars', 12000));
+            const delta = contextDelta(packet, `${provider}:${model}:${s.root}`, continuing && (s.contextTurns || 0) < 8 ? s.contextSnapshot : undefined);
+            send({ type: 'context', chars: delta.chars, fullChars: delta.fullChars, avoidedChars: delta.avoidedChars, mode: delta.mode, sources: packet.sources });
+            if (rollover) send({ type: 'activity', text: 'Economy history window renewed: recent conversation excerpts + fresh project context.' });
+            const history = provider === 'api' && !s.previous ? recentHistory(s.messages.slice(0, -1)) : '';
+            const prompt = `${text}\n${history}\nUse the following project data as context. Request additional source files only when needed.\n${delta.text}`;
             if (provider === 'codex') {
                 await connect();
                 if (s.threadId)
@@ -197,15 +216,22 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
                 const result = await bridge.request('turn/start', { threadId: s.threadId, input: [{ type: 'text', text: prompt }], model, cwd: s.root, approvalPolicy: 'unlessTrusted', sandboxPolicy: { type: 'workspaceWrite', writableRoots: [s.root], networkAccess: false } });
                 currentTurn = result.turn.id;
+                s.contextSnapshot = delta.snapshot;
+                s.contextTurns = delta.mode === 'full' ? 1 : (s.contextTurns || 0) + 1;
+                await persist();
             }
             else {
                 const key = await context.secrets.get('openai-api-key');
                 if (!key)
                     throw new Error('Use “Set API key” first. Your ChatGPT subscription is available through the Codex provider.');
                 abort = new AbortController();
-                const result = await apiTurn({ key, model, workspace, prompt, previous: s.previous, maxSteps: vscode.workspace.getConfiguration('codech').get('apiMaxSteps', 8), signal: abort.signal, onText: t => note(t), onTool: text => send({ type: 'activity', text }), onProposal: p => { proposals.set(p.id, p); send({ type: 'proposal', proposal: { id: p.id, path: p.path, reason: p.reason } }); }, approveCheck: async (name) => await vscode.window.showWarningMessage(`Run “npm run ${name}” in ${s.root}? This executes project code.`, { modal: true }, 'Run check') === 'Run check' });
+                const result = await apiTurn({ key, model, workspace, prompt, previous: s.previous, maxSteps: config.get('apiMaxSteps', 6), maxOutputTokens: config.get('apiMaxOutputTokens', 3000), usageGuard: config.get('apiUsageGuard', 16000), toolOutputChars: config.get('toolOutputChars', 12000), signal: abort.signal, onText: t => note(t), onTool: text => send({ type: 'activity', text }), onProposal: p => { proposals.set(p.id, p); send({ type: 'proposal', proposal: { id: p.id, path: p.path, reason: p.reason } }); }, approveCheck: async (name) => await vscode.window.showWarningMessage(`Run “npm run ${name}” in ${s.root}? This executes project code.`, { modal: true }, 'Run check') === 'Run check' });
                 s.previous = result.previous;
                 s.tokens += result.tokens;
+                s.usage = { inputTokens: result.inputTokens, outputTokens: result.outputTokens, cachedTokens: result.cachedTokens };
+                s.contextSnapshot = result.previous ? delta.snapshot : undefined;
+                s.contextTurns = delta.mode === 'full' ? 1 : (s.contextTurns || 0) + 1;
+                s.apiChainTurns = result.previous ? (s.apiChainTurns || 0) + 1 : 0;
                 running = false;
                 abort = undefined;
                 await persist();
@@ -214,6 +240,8 @@ export async function activate(context: vscode.ExtensionContext) {
             }
         }
         catch (e) {
+            s.contextSnapshot = undefined;
+            if (provider === 'api') { s.previous = undefined; s.apiChainTurns = 0; }
             running = false;
             abort = undefined;
             send({ type: 'error', text: (e as Error).message });
@@ -225,6 +253,15 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!m || typeof m.type !== 'string')
             return;
         switch (m.type) {
+            case 'appearance':
+                await vscode.commands.executeCommand('workbench.action.selectTheme');
+                break;
+            case 'settings':
+                await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:codech.codech-workbench');
+                break;
+            case 'keymap':
+                await vscode.commands.executeCommand('workbench.extensions.search', 'IntelliJ keybindings');
+                break;
             case 'ready':
                 await state();
                 break;
@@ -484,6 +521,8 @@ export async function activate(context: vscode.ExtensionContext) {
     } }));
     context.subscriptions.push(vscode.commands.registerCommand('codech.setApiKey', () => handle({ type: 'apiKey' })));
     context.subscriptions.push(vscode.commands.registerCommand('codech.login', () => handle({ type: 'login' }).catch(e => vscode.window.showErrorMessage(e.message))));
+    context.subscriptions.push(vscode.commands.registerCommand('codech.appearance', () => handle({ type: 'appearance' })));
+    context.subscriptions.push(vscode.commands.registerCommand('codech.settings', () => handle({ type: 'settings' })));
     const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 10);
     status.text = '$(sparkle) Codech';
     status.command = 'codech.open';
@@ -494,6 +533,6 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(() => refreshTree.fire()));
     if (!sessions.length) {
         newSession();
-        await open();
     }
+    if (vscode.workspace.getConfiguration('codech').get('openOnStartup', true)) await open();
 }

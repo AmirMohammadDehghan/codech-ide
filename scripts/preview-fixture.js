@@ -5,6 +5,7 @@ const state = { type: 'state', tab: 'chat', root, trusted: true, running: false,
 function emit(m) { window.postMessage(structuredClone(m), '*'); }
 window.addEventListener('codech-preview', e => {
     const m = e.detail;
+    if (m.type === 'appearance') { const themes = ['dark', 'light', 'forest']; document.body.dataset.theme = themes[(themes.indexOf(document.body.dataset.theme || 'dark') + 1) % themes.length]; return; }
     if (m.type === 'navigate') {
         state.tab = m.tab;
         emit(state);
